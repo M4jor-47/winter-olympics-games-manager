@@ -1,39 +1,23 @@
-<!DOCTYPE html>
-<html lang="pl">
-<head>
-<meta charset="UTF-8">
-<title>Winter Olympics Manager</title>
-<style>
-  body { font-family: Arial, sans-serif; background: #f0f8ff; color: #333; padding: 20px; }
-  h1 { text-align: center; }
-  button { padding: 10px 20px; margin: 5px; cursor: pointer; border-radius: 5px; border: none; background: #1e90ff; color: white; }
-  button:hover { background: #0d6efd; }
-  .country { margin-top: 20px; }
-  .athletes { margin-left: 20px; }
-</style>
-</head>
-<body>
+// data.js – zawodnicy do Winter Olympics Manager 2026 (mężczyźni)
 
-<h1>Winter Olympics Manager</h1>
-
-<div id="countries"></div>
-<div id="athletes"></div>
-
-<script>
-// --- Dane zawodników (data.js) ---
 const countries = [
   {
     name: "Austria",
     flag: "🇦🇹",
     athletes: [
+      // Skoki narciarskie
       { name: "Stephan Embacher", discipline: "Skoki", skill: 92, fatigue: 0 },
       { name: "Jan Hoerl", discipline: "Skoki", skill: 91, fatigue: 0 },
       { name: "Stefan Kraft", discipline: "Skoki", skill: 90, fatigue: 0 },
       { name: "Daniel Tschofenig", discipline: "Skoki", skill: 89, fatigue: 0 },
+
+      // Biathlon
       { name: "Dominic Unterweger", discipline: "Biathlon", skill: 87, fatigue: 0 },
       { name: "Michael Rösch", discipline: "Biathlon", skill: 85, fatigue: 0 },
       { name: "David Komatz", discipline: "Biathlon", skill: 84, fatigue: 0 },
       { name: "Simon Eder", discipline: "Biathlon", skill: 86, fatigue: 0 },
+
+      // Narciarstwo alpejskie
       { name: "Vincent Kriechmayr", discipline: "Narciarstwo Alpejskie", skill: 95, fatigue: 0 },
       { name: "Raphael Haaser", discipline: "Narciarstwo Alpejskie", skill: 92, fatigue: 0 },
       { name: "Lukas Feurstein", discipline: "Narciarstwo Alpejskie", skill: 90, fatigue: 0 },
@@ -44,14 +28,19 @@ const countries = [
     name: "Niemcy",
     flag: "🇩🇪",
     athletes: [
+      // Skoki narciarskie
       { name: "Philipp Raimund", discipline: "Skoki", skill: 91, fatigue: 0 },
       { name: "Felix Hoffmann", discipline: "Skoki", skill: 90, fatigue: 0 },
       { name: "Pius Paschke", discipline: "Skoki", skill: 84, fatigue: 0 },
       { name: "Andreas Wellinger", discipline: "Skoki", skill: 84, fatigue: 0 },
+
+      // Biathlon
       { name: "Philipp Nawrath", discipline: "Biathlon", skill: 92, fatigue: 0 },
       { name: "Justus Strelow", discipline: "Biathlon", skill: 89, fatigue: 0 },
       { name: "Danilo Riethmüller", discipline: "Biathlon", skill: 87, fatigue: 0 },
       { name: "Simon Kaiser", discipline: "Biathlon", skill: 86, fatigue: 0 },
+
+      // Narciarstwo alpejskie
       { name: "Linus Strasser", discipline: "Narciarstwo Alpejskie", skill: 90, fatigue: 0 },
       { name: "Anton Grammel", discipline: "Narciarstwo Alpejskie", skill: 88, fatigue: 0 },
       { name: "Felix Neureuther", discipline: "Narciarstwo Alpejskie", skill: 87, fatigue: 0 },
@@ -62,14 +51,19 @@ const countries = [
     name: "Norwegia",
     flag: "🇳🇴",
     athletes: [
+      // Skoki narciarskie
       { name: "Johann Andre Forfang", discipline: "Skoki", skill: 87, fatigue: 0 },
       { name: "Kristoffer Eriksen Sundal", discipline: "Skoki", skill: 88, fatigue: 0 },
       { name: "Marius Lindvik", discipline: "Skoki", skill: 87, fatigue: 0 },
       { name: "Halvor Egner Granerud", discipline: "Skoki", skill: 85, fatigue: 0 },
+
+      // Biathlon
       { name: "Sturla Holm Lægreid", discipline: "Biathlon", skill: 95, fatigue: 0 },
       { name: "Vetle Sjåstad Christiansen", discipline: "Biathlon", skill: 92, fatigue: 0 },
       { name: "Johannes Dale‑Skjevdal", discipline: "Biathlon", skill: 90, fatigue: 0 },
       { name: "Isak Leknes Frey", discipline: "Biathlon", skill: 88, fatigue: 0 },
+
+      // Narciarstwo alpejskie
       { name: "Atle Lie McGrath", discipline: "Narciarstwo Alpejskie", skill: 93, fatigue: 0 },
       { name: "Fredrik Møller", discipline: "Narciarstwo Alpejskie", skill: 90, fatigue: 0 },
       { name: "Henrik Kristoffersen", discipline: "Narciarstwo Alpejskie", skill: 92, fatigue: 0 },
@@ -77,43 +71,3 @@ const countries = [
     ]
   }
 ];
-
-// --- Logika wyświetlania ---
-const countriesDiv = document.getElementById('countries');
-const athletesDiv = document.getElementById('athletes');
-
-// Przyciski dla krajów
-countries.forEach((country, index) => {
-  const btn = document.createElement('button');
-  btn.textContent = `${country.flag} ${country.name}`;
-  btn.onclick = () => showAthletes(index);
-  countriesDiv.appendChild(btn);
-});
-
-// Wyświetlanie zawodników po dyscyplinach
-function showAthletes(countryIndex) {
-  const country = countries[countryIndex];
-  athletesDiv.innerHTML = `<h2>${country.flag} ${country.name}</h2>`;
-
-  const disciplines = {};
-  country.athletes.forEach(a => {
-    if (!disciplines[a.discipline]) disciplines[a.discipline] = [];
-    disciplines[a.discipline].push(a);
-  });
-
-  for (const [discipline, athletes] of Object.entries(disciplines)) {
-    const div = document.createElement('div');
-    div.className = 'country';
-    div.innerHTML = `<h3>${discipline}</h3>`;
-    athletes.forEach(a => {
-      const p = document.createElement('p');
-      p.textContent = `${a.name} – Skill: ${a.skill}, Fatigue: ${a.fatigue}`;
-      div.appendChild(p);
-    });
-    athletesDiv.appendChild(div);
-  }
-}
-</script>
-
-</body>
-</html>
