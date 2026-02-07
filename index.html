@@ -2,138 +2,154 @@
 <html lang="pl">
 <head>
 <meta charset="UTF-8">
-<title>Winter Olympics Manager</title>
+<title>Winter Ski Jumping Simulator 2026</title>
 <style>
-  body { font-family: Arial, sans-serif; background: #f0f8ff; color: #333; padding: 20px; }
-  h1 { text-align: center; }
-  button { padding: 10px 20px; margin: 5px; cursor: pointer; border-radius: 5px; border: none; background: #1e90ff; color: white; }
-  button:hover { background: #0d6efd; }
-  .country { margin-top: 20px; }
+body { font-family: Arial, sans-serif; background: #f0f8ff; color: #333; padding: 20px; }
+h1, h2, h3 { text-align: center; }
+button { padding: 10px 20px; margin: 5px; cursor: pointer; border-radius: 5px; border: none; background: #1e90ff; color: white; }
+button:hover { background: #0d6efd; }
+.country, .results, .competition { margin-top: 20px; padding: 10px; border: 1px solid #ccc; border-radius: 5px; background: #fff; }
+table { border-collapse: collapse; width: 100%; margin-top: 10px; }
+table, th, td { border: 1px solid #999; }
+th, td { padding: 5px; text-align: center; }
 </style>
 </head>
 <body>
-
-<h1>Winter Olympics Manager</h1>
+<h1>Winter Ski Jumping Simulator 2026</h1>
 
 <div id="countries"></div>
-<div id="athletes"></div>
 
-<!-- Przycisk Trening -->
-<button id="trainBtn">Trening wszystkich zawodników</button>
+<div id="controls" style="text-align:center; margin-top:20px;">
+  <button onclick="simulateJump()">Symuluj skok indywidualny</button>
+  <button onclick="simulateCompetition()">Symuluj cały konkurs indywidualny</button>
+  <button onclick="simulateTeamCompetition()">Symuluj konkurs drużynowy</button>
+</div>
+
+<div id="results" class="results"></div>
 
 <script>
-// --- DANE ZAWODNIKÓW ---
+// ==================== DANE KRAJÓW (TOP ZAWODNIKÓW) ====================
 const countries = [
-  {
-    name: "Austria",
-    flag: "🇦🇹",
-    athletes: [
-      { name: "Stephan Embacher", discipline: "Skoki", skill: 92, fatigue: 0 },
-      { name: "Jan Hoerl", discipline: "Skoki", skill: 91, fatigue: 0 },
-      { name: "Stefan Kraft", discipline: "Skoki", skill: 90, fatigue: 0 },
-      { name: "Daniel Tschofenig", discipline: "Skoki", skill: 89, fatigue: 0 },
-      { name: "Dominic Unterweger", discipline: "Biathlon", skill: 87, fatigue: 0 },
-      { name: "Michael Rösch", discipline: "Biathlon", skill: 85, fatigue: 0 },
-      { name: "David Komatz", discipline: "Biathlon", skill: 84, fatigue: 0 },
-      { name: "Simon Eder", discipline: "Biathlon", skill: 86, fatigue: 0 },
-      { name: "Vincent Kriechmayr", discipline: "Narciarstwo Alpejskie", skill: 95, fatigue: 0 },
-      { name: "Raphael Haaser", discipline: "Narciarstwo Alpejskie", skill: 92, fatigue: 0 },
-      { name: "Lukas Feurstein", discipline: "Narciarstwo Alpejskie", skill: 90, fatigue: 0 },
-      { name: "Stefan Babinsky", discipline: "Narciarstwo Alpejskie", skill: 88, fatigue: 0 }
-    ]
-  },
-  {
-    name: "Niemcy",
-    flag: "🇩🇪",
-    athletes: [
-      { name: "Philipp Raimund", discipline: "Skoki", skill: 91, fatigue: 0 },
-      { name: "Felix Hoffmann", discipline: "Skoki", skill: 90, fatigue: 0 },
-      { name: "Pius Paschke", discipline: "Skoki", skill: 84, fatigue: 0 },
-      { name: "Andreas Wellinger", discipline: "Skoki", skill: 84, fatigue: 0 },
-      { name: "Philipp Nawrath", discipline: "Biathlon", skill: 92, fatigue: 0 },
-      { name: "Justus Strelow", discipline: "Biathlon", skill: 89, fatigue: 0 },
-      { name: "Danilo Riethmüller", discipline: "Biathlon", skill: 87, fatigue: 0 },
-      { name: "Simon Kaiser", discipline: "Biathlon", skill: 86, fatigue: 0 },
-      { name: "Linus Strasser", discipline: "Narciarstwo Alpejskie", skill: 90, fatigue: 0 },
-      { name: "Anton Grammel", discipline: "Narciarstwo Alpejskie", skill: 88, fatigue: 0 },
-      { name: "Felix Neureuther", discipline: "Narciarstwo Alpejskie", skill: 87, fatigue: 0 },
-      { name: "Sebastian Holzmann", discipline: "Narciarstwo Alpejskie", skill: 86, fatigue: 0 }
-    ]
-  },
-  {
-    name: "Norwegia",
-    flag: "🇳🇴",
-    athletes: [
-      { name: "Johann Andre Forfang", discipline: "Skoki", skill: 87, fatigue: 0 },
-      { name: "Kristoffer Eriksen Sundal", discipline: "Skoki", skill: 88, fatigue: 0 },
-      { name: "Marius Lindvik", discipline: "Skoki", skill: 87, fatigue: 0 },
-      { name: "Halvor Egner Granerud", discipline: "Skoki", skill: 85, fatigue: 0 },
-      { name: "Sturla Holm Lægreid", discipline: "Biathlon", skill: 95, fatigue: 0 },
-      { name: "Vetle Sjåstad Christiansen", discipline: "Biathlon", skill: 92, fatigue: 0 },
-      { name: "Johannes Dale‑Skjevdal", discipline: "Biathlon", skill: 90, fatigue: 0 },
-      { name: "Isak Leknes Frey", discipline: "Biathlon", skill: 88, fatigue: 0 },
-      { name: "Atle Lie McGrath", discipline: "Narciarstwo Alpejskie", skill: 93, fatigue: 0 },
-      { name: "Fredrik Møller", discipline: "Narciarstwo Alpejskie", skill: 90, fatigue: 0 },
-      { name: "Henrik Kristoffersen", discipline: "Narciarstwo Alpejskie", skill: 92, fatigue: 0 },
-      { name: "Leif Kristian Haugen", discipline: "Narciarstwo Alpejskie", skill: 88, fatigue: 0 }
-    ]
-  }
+  // Austria
+  {name:"Austria", flag:"🇦🇹", athletes:[
+    {name:"Jan Hoerl", skill:91}, {name:"Stephan Embacher", skill:92}, {name:"Stefan Kraft", skill:91}, {name:"Manuel Fettner", skill:88}, {name:"Daniel Tschofenig", skill:87},
+    {name:"Jonas Schuster", skill:87}, {name:"Clemens Aigner", skill:86}, {name:"Niklas Bachlinger", skill:84}, {name:"Markus Mueller", skill:84}, {name:"Maximillian Ortner", skill:83},
+    {name:"Clemens Leitner", skill:83}, {name:"Raffael Zimmermann", skill:83}, {name:"Julijan Smid", skill:82}, {name:"Simon Steinberger", skill:82}, {name:"Stefan Rainer", skill:82},
+    {name:"Hannes Landerer", skill:82}, {name:"Francisco Moerth", skill:82}, {name:"Philipp Aschenwald", skill:82}, {name:"Jakob Steinberger", skill:81}, {name:"Peter Resinger", skill:80}
+  ]},
+  // Polska
+  {name:"Polska", flag:"🇵🇱", athletes:[
+    {name:"Kamil Stoch", skill:87}, {name:"Dawid Kubacki", skill:80}, {name:"Piotr Żyła", skill:82}, {name:"Maciej Kot", skill:84}, {name:"Paweł Wąsek", skill:81},
+    {name:"Aleksander Zniszczoł", skill:80}, {name:"Kacper Tomasiak", skill:89}, {name:"Jakub Wolny", skill:77}, {name:"Kamil Waszek", skill:77}, {name:"Kacper Juroszek", skill:76},
+    {name:"Adam Niżnik", skill:81}, {name:"Jan Galica", skill:70}, {name:"Andrzej Stękała", skill:69}, {name:"Mateusz Mysza", skill:67}, {name:"Konrad Tomasiak", skill:66},
+    {name:"Szymon Dubiel", skill:64}, {name:"Jan Habdas", skill:64}, {name:"Stanisław Wiercioch", skill:64}, {name:"Kacper Jarząbek", skill:63}, {name:"Franciszek Kiełbasa", skill:62}
+  ]},
+  // Japonia
+  {name:"Japonia", flag:"🇯🇵", athletes:[
+    {name:"Ryoyu Kobayashi", skill:91}, {name:"Ren Nikaido", skill:89}, {name:"Naoki Nakamura", skill:86}, {name:"Yukiya Sato", skill:84}, {name:"Sakutaro Kobayashi", skill:83},
+    {name:"Tomofumi Naito", skill:82}, {name:"Keiichi Sato", skill:81}, {name:"Junshiro Kobayashi", skill:81}, {name:"Taku Takeuchi", skill:78}, {name:"Yuto Nakamura", skill:78},
+    {name:"Noriaki Kasai", skill:78}, {name:"Daimatsu Takehana", skill:77}, {name:"Go Yamamoto", skill:77}, {name:"Rikuta Watanabe", skill:76}, {name:"Shinnosuke Fujita", skill:75},
+    {name:"Ryusei Ikeda", skill:74}, {name:"Sota Kudo", skill:74}, {name:"Hiyuma Fuse", skill:73}, {name:"Yuken Iwasa", skill:73}, {name:"Tatsunao Kobayashi", skill:70}
+  ]},
+  // Szwajcaria
+  {name:"Szwajcaria", flag:"🇨🇭", athletes:[
+    {name:"Sandro Hauswirth", skill:85}, {name:"Gregor Deschwanden", skill:84}, {name:"Felix Trunz", skill:83}, {name:"Juri Kesseli", skill:83}, {name:"Simon Ammann", skill:81},
+    {name:"Yanick Wasser", skill:79}, {name:"Killian Peier", skill:79}, {name:"Remo Imhof", skill:78}, {name:"Marius Sieber", skill:70}, {name:"Lars Kindlimann", skill:69},
+    {name:"Noah Studer", skill:67}, {name:"Elias Arnold", skill:66}, {name:"Maurin Schneider", skill:56}, {name:"Mauro Imhof", skill:54}, {name:"Lars Kuenzle", skill:53},
+    {name:"Lion Hoesli", skill:52}, {name:"Zacchary Penseyres", skill:52}, {name:"Finn Kempf", skill:51}, {name:"Noel Woodtli", skill:51}, {name:"Simon Schmutz", skill:50}
+  ]},
+  // Niemcy
+  {name:"Niemcy", flag:"🇩🇪", athletes:[
+    {name:"Philipp Raimund", skill:90}, {name:"Felix Hoffmann", skill:88}, {name:"Pius Paschke", skill:84}, {name:"Karl Geiger", skill:82}, {name:"Andreas Wellinger", skill:81},
+    {name:"Luca Roth", skill:77}, {name:"Ben Bayer", skill:76}, {name:"Constantin Schmid", skill:76}, {name:"Jannik Faisst", skill:74}, {name:"Max Unglaube", skill:74},
+    {name:"Adrian Tittel", skill:73}, {name:"Alex Reiter", skill:72}, {name:"Finn Braun", skill:71}, {name:"Robin Kloss", skill:70}, {name:"Yann Kullmann", skill:70},
+    {name:"Emanuel Schmid", skill:70}, {name:"Justin Lisso", skill:68}, {name:"Julian Hillmer", skill:67}, {name:"Nando Riemann", skill:66}, {name:"Martin Hamann", skill:66}
+  ]},
+  // Słowenia
+  {name:"Słowenia", flag:"🇸🇮", athletes:[
+    {name:"Domen Prevc", skill:93}, {name:"Anze Lanisek", skill:91}, {name:"Timi Zajc", skill:85}, {name:"Rok Oblak", skill:83}, {name:"Ziga Jancar", skill:80},
+    {name:"Enej Faletic", skill:80}, {name:"Lovro Kos", skill:79}, {name:"Rok Masle", skill:79}, {name:"Zak Mogel", skill:79}, {name:"Ziga Jelar", skill:79},
+    {name:"Maksim Bartolj", skill:78}, {name:"Gorazd Zavrsnik", skill:75}, {name:"Mai Zakelsek", skill:73}, {name:"Matija Vidic", skill:70}, {name:"Nik Gostisa Lah", skill:68},
+    {name:"Taj Ekart", skill:68}, {name:"Jernej Presecnik", skill:67}, {name:"Lovro Jelenc", skill:67}, {name:"Nik Bergant Smerajc", skill:66}, {name:"Luka Filip", skill:65}
+  ]},
+  // Finlandia
+  {name:"Finlandia", flag:"🇫🇮", athletes:[
+    {name:"Niko Kytosaho", skill:85}, {name:"Antti Aalto", skill:84}, {name:"Vilho Palosaari", skill:82}, {name:"Kasperi Valto", skill:81}, {name:"Jarkko Maatta", skill:81},
+    {name:"Eetu Nousiainen", skill:80}, {name:"Tomas Kuisma", skill:75}, {name:"Henri Kavilo", skill:74}, {name:"Tuomas Kinnunen", skill:74}, {name:"Tumoas Meis", skill:70},
+    {name:"Paavo Romppainen", skill:68}, {name:"Timi Heiskanen", skill:67}, {name:"Aapo Komonen", skill:63}, {name:"Eeli Keranen", skill:62}, {name:"Juho Ojala", skill:61},
+    {name:"Pyry Kykkanen", skill:59}, {name:"Pyry Keskinen", skill:58}, {name:"Riku Vartiainen", skill:54}, {name:"Veeti Hyvarinen", skill:53}, {name:"Andreas Helanne", skill:51}
+  ]},
+  // Estonia
+  {name:"Estonia", flag:"🇪🇪", athletes:[
+    {name:"Artti Aigro", skill:84}, {name:"Kaimar Vagul", skill:79}, {name:"Andero Kapp", skill:73}
+  ]},
+  // Norwegia
+  {name:"Norwegia", flag:"🇳🇴", athletes:[
+    {name:"Halvor Egner Granerud", skill:87}, {name:"Johann Andre Forfang", skill:86}, {name:"Marius Lindvik", skill:86}, {name:"Kristoffer Eriksen Sundal", skill:85}, {name:"Benjamin Oestvold", skill:84},
+    {name:"Robin Pedersen", skill:84}, {name:"Isak Andreas Langmo", skill:83}, {name:"Joergen Oliver Stroem", skill:83}, {name:"Fredrik Gran", skill:81}, {name:"Fredrik Villumstad", skill:81},
+    {name:"Sindre Ulven Joergensen", skill:80}, {name:"Jesper Nilsen Ingebrigtsvoll", skill:78}, {name:"Espen Bjoernstad", skill:78}, {name:"Soelve Jokerud Strand", skill:78}, {name:"Adrian Thon Gundersrud", skill:77},
+    {name:"Oddvar Gunneroed", skill:76}, {name:"Anders Haare", skill:75}, {name:"Jakob Alvsaaker Walseth", skill:74}, {name:"Bendik Jakobsen Heggli", skill:74}, {name:"Leonard Fageraas", skill:73}
+  ]},
+  // USA
+  {name:"USA", flag:"🇺🇸", athletes:[
+    {name:"Jason Colby", skill:86}, {name:"Tate Frantz", skill:82}, {name:"Andrew Urlaub", skill:80}, {name:"Kevin Bickner", skill:80}, {name:"Erik Belshaw", skill:80},
+    {name:"Decker Dean", skill:78}, {name:"Bryce Kloc", skill:72}, {name:"Sawyer Graves", skill:67}, {name:"Maxim Glyvka", skill:63}, {name:"Henry Loher", skill:62},
+    {name:"Isaac Larson", skill:59}, {name:"Eli Larkin", skill:58}, {name:"Jack Kroll", skill:56}, {name:"Isak Nichols", skill:52}, {name:"Seth Rothchild", skill:48},
+    {name:"Austin Johnson", skill:46}
+  ]},
+  // Czechy
+  {name:"Czechy", flag:"🇨🇿", athletes:[
+    {name:"Roman Koudelka", skill:83}, {name:"David Rygl", skill:78}, {name:"Benedikt Holub", skill:75}, {name:"Daniel Skarka", skill:75}, {name:"Filip Krenek", skill:74},
+    {name:"Jiri Cerny", skill:70}, {name:"Lukas Jerabek", skill:59}, {name:"Stepan Kysel", skill:64}, {name:"Jan Osmera", skill:61}, {name:"Dominik Lukes", skill:53},
+    {name:"Martin Novak", skill:46}, {name:"Stepan Janata", skill:45}, {name:"Oliver Janda", skill:45}, {name:"Michal Vanek", skill:44}
+  ]},
+  // Słowacja
+  {name:"Słowacja", flag:"🇸🇰", athletes:[
+    {name:"Hektor Kapustik", skill:80}, {name:"Jakub Karkalik", skill:56}, {name:"Michal Valach", skill:54}, {name:"Marek Potancok", skill:46}, {name:"Matus Polony", skill:46},
+    {name:"Marek Badani", skill:46}, {name:"Filip Kucharek", skill:43}
+  ]},
+  // Ukraina
+  {name:"Ukraina", flag:"🇺🇦", athletes:[
+    {name:"Yevhen Marusiak", skill:80}, {name:"Vitaliy Kalinichenko", skill:77}, {name:"Vitalii Druchkiv", skill:56}, {name:"Denys Pylypchuk", skill:54},
+    {name:"Oleksa Moseichuk", skill:53}, {name:"Rostyslav Kirashchuk", skill:52}, {name:"Vasyl Bukhonko", skill:51}, {name:"Oleksandr Shovkoplias", skill:49},
+    {name:"Maksym Prokopiuk", skill:46}
+  ]},
+  // Bułgaria
+  {name:"Bułgaria", flag:"🇧🇬", athletes:[
+    {name:"Vladimir Zografski", skill:86}, {name:"Martin Hristov", skill:40}, {name:"Simeon Nikolov", skill:38}, {name:"Danail Pavlovich", skill:33}
+  ]},
+  // Włochy
+  {name:"Włochy", flag:"🇮🇹", athletes:[
+    {name:"Giovanni Bresadola", skill:80}, {name:"Alex Insam", skill:80}, {name:"Francesco Cecon", skill:78}, {name:"Maximillian Gartner", skill:74},
+    {name:"Min Iorio", skill:63}, {name:"Martin Chenetti", skill:56}, {name:"Martino Zambenedetti", skill:51}, {name:"Samuel Unterfrauner", skill:43}
+  ]},
+  // Turcja
+  {name:"Turcja", flag:"🇹🇷", athletes:[
+    {name:"Fatih Arda Ipcioglu", skill:76}, {name:"Muhammed Ali Bedir", skill:76}, {name:"Kerem Karadag", skill:30}, {name:"Emir Ceylan", skill:30}
+  ]}
 ];
 
-// --- WYŚWIETLANIE ZAWODNIKÓW ---
-const countriesDiv = document.getElementById('countries');
-const athletesDiv = document.getElementById('athletes');
-
-countries.forEach((country, index) => {
-  const btn = document.createElement('button');
-  btn.textContent = `${country.flag} ${country.name}`;
-  btn.onclick = () => showAthletes(index);
-  countriesDiv.appendChild(btn);
-});
-
-function showAthletes(countryIndex) {
-  const country = countries[countryIndex];
-  athletesDiv.innerHTML = `<h2>${country.flag} ${country.name}</h2>`;
-
-  const disciplines = {};
-  country.athletes.forEach(a => {
-    if (!disciplines[a.discipline]) disciplines[a.discipline] = [];
-    disciplines[a.discipline].push(a);
+// ==================== FUNKCJE SYMULACJI ====================
+function simulateJump() {
+  const results = countries.map(c => {
+    const athlete = c.athletes[Math.floor(Math.random()*c.athletes.length)];
+    const distance = athlete.skill + Math.floor(Math.random()*15);
+    const points = Math.round(distance + (Math.random()*20 - 10));
+    return `${c.flag} ${athlete.name} - Odległość: ${distance} m, Nota: ${points}`;
   });
-
-  for (const [discipline, athletes] of Object.entries(disciplines)) {
-    const div = document.createElement('div');
-    div.innerHTML = `<h3>${discipline}</h3>`;
-    athletes.forEach(a => {
-      const p = document.createElement('p');
-      p.textContent = `${a.name} – Skill: ${a.skill}, Fatigue: ${a.fatigue}`;
-      div.appendChild(p);
-    });
-    athletesDiv.appendChild(div);
-  }
+  document.getElementById('results').innerHTML = '<h3>Skok indywidualny:</h3>' + results.join('<br>');
 }
 
-// --- PRZYCISK TRENING ---
-document.getElementById('trainBtn').onclick = function() {
-  countries.forEach(country => {
-    country.athletes.forEach(a => {
-      const skillIncrease = Math.floor(Math.random() * 3) + 1; // 1-3
-      a.skill += skillIncrease;
-      const fatigueIncrease = Math.floor(Math.random() * 2) + 1; // 1-2
-      a.fatigue += fatigueIncrease;
+function simulateCompetition() {
+  let results = [];
+  countries.forEach(c => {
+    c.athletes.forEach(a => {
+      const jump1 = a.skill + Math.floor(Math.random()*15);
+      const jump2 = a.skill + Math.floor(Math.random()*15);
+      const total = jump1 + jump2 + Math.round(Math.random()*20-10);
+      results.push({name:a.name, country:c.flag, total, jump1, jump2});
     });
   });
-
-  const currentCountry = document.querySelector('#athletes h2');
-  if(currentCountry) {
-    const countryName = currentCountry.textContent.split(' ')[1]; 
-    const countryIndex = countries.findIndex(c => c.name === countryName);
-    if(countryIndex !== -1) showAthletes(countryIndex);
-  }
-
-  alert("Trening zakończony! Skill i fatigue zawodników zaktualizowane.");
-};
-</script>
-
-</body>
-</html>
+  results.sort((a,b) => b.total - a.total);
+  let table = '<h3>Wyniki konkursu indywidualnego:</h3><table><tr><th>#</th><th>Zawodnik</th><th>Kraj</th><th>Skok 1</th><th>Skok 2</th><th>Suma</th></tr>';
+  results.forEach((r,i)=>table+=`<tr><td>${i+1}</td><td>${r.name}</td><td>${r.country}</td><
